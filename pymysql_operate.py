@@ -1,43 +1,33 @@
-import mysql.connector
-
-
-class mysql_operate(object):
+import pymysql
+class pymysql_operate(object):
     db_name = "test2_db"
-
+    table_name="user"
     def connect_mysql(self):
-        self.mydb = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            passwd="123456",
-            database=self.db_name
+        self.mydb = pymysql.connect(
+            "localhost",
+            "root",
+            "123456",
+            self.db_name
         )
-
-    def create_db(self):
-        mydb = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            passwd="123456"
-        )
-        mycursor = mydb.cursor()
-        sql = "CREATE DATABASE if not exists {}".format(self.db_name)
-        mycursor.execute(sql)
 
     def create_table(self):
         self.connect_mysql()
         mycursor = self.mydb.cursor()
-        sql = "CREATE TABLE if not exists user(id INT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(255),age INT)"
+        sql = "CREATE TABLE if not exists {}(id INT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(255),age INT)".format(self.table_name)
         mycursor.execute(sql)
+        mycursor.close()
 
     def drop_table(self):
         self.connect_mysql()
         mycursor = self.mydb.cursor()
-        sql = "drop table if exists user"
+        sql = "drop table if exists {}".format(self.table_name)
         mycursor.execute(sql)
+        mycursor.close()
 
     def insert_data(self):
         self.connect_mysql()
         mycursor = self.mydb.cursor()
-        sql = "INSERT INTO user (name,age) VALUES (%s,%s)"
+        sql = "INSERT INTO {} (name,age) VALUES (%s,%s)".format(self.table_name)
         val = ("zhuly", 26)
         mycursor.execute(sql, val)
         self.mydb.commit()
@@ -46,7 +36,7 @@ class mysql_operate(object):
     def update_data(self):
         self.connect_mysql()
         mycursor = self.mydb.cursor()
-        sql = "update user set name=%s where name=%s"
+        sql = "update {} set name=%s where name=%s".format(self.table_name)
         val = ("zhuliyi", "zhuly")
         mycursor.execute(sql, val)
         self.mydb.commit()
@@ -55,7 +45,7 @@ class mysql_operate(object):
     def del_date(self):
         self.connect_mysql()
         mycursor = self.mydb.cursor()
-        sql = "delete from user where id=5"
+        sql = "delete from {} where id=5".format(self.table_name)
         mycursor.execute(sql)
         self.mydb.commit()
         print(mycursor.rowcount, " 条记录删除成功")
@@ -64,7 +54,7 @@ class mysql_operate(object):
         self.connect_mysql()
         mycursor = self.mydb.cursor()
         # sql = "select * from user where name='zhuly' order by age desc limit 2"
-        sql = "select * from user"
+        sql = "select * from {}".format(self.table_name)
         mycursor.execute(sql)
         result = mycursor.fetchall()
 
